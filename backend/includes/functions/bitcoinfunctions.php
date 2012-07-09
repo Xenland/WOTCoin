@@ -146,39 +146,48 @@ function register_address_step1($address){
 		$address_valid = $Bitcoin_connection["connection_tunnel"]->checkAddress($address);
 		
 		if($address_valid == 1){
-			//Address is a valid Bitcoin address
-				//Generate message
-				$generated_message = $address."-".wot_generateRandomString(512);
-				
-				//check if address is currently already in the register db
-				$address_exists_q = wot_doQuery("SELECT `id` FROM `address_authentication_awaiting_index` WHERE `address_to_register` = ? LIMIT 0,1", $address);
-				$address_exists	= $address_exists_q->fetch();
-				
-				if($address_exists["id"] > 0){
-					//Address is in the database, Update the generated message for the "supposed" owner to sign and send back to us verifications
-					$message_id_q = wot_doQuery("UPDATE `address_authentication_awaiting_index` SET `message` = ? WHERE `id` = ? AND `address_to_register` = ? LIMIT 1", $generated_message, $address_exists["id"], $address);
-				
-				}else{
-					//Address is not in the database, Generate a message for the "supposed" owner to sign and send back to us verifications
-					$message_id = wot_doQuery_returnId("INSERT INTO `address_authentication_awaiting_index` (
-																			`timestamp_attempt_to_register`,
-																			`address_to_register`,
-																			`message`
-																		)
-																		
-																	VALUES(
-																			?,
-																			?,
-																			?
-																		)", 
-																		time(),
-																		$address,
-																		$generated_message);
-				}
-				
-				//Assuming the queries above worked
-				$output["return_status"] = 1;
-				$output["authentication_message"] = $generated_message;
+			//Check if the address is already registered
+			$address_registered_q = wot_doQuery("SELECT `id` FROM `address_index` WHERE `address` = ? LIMIT 0,1", $address);
+			$address_registered = $address_registered_q->fetch();
+			
+			if($address_registered["id"] == 0){
+				//Address is a valid Bitcoin address
+					//Generate message
+					$generated_message = $address."-".wot_generateRandomString(512);
+					
+					//check if address is currently already in the register db
+					$address_exists_q = wot_doQuery("SELECT `id` FROM `address_authentication_awaiting_index` WHERE `address_to_register` = ? LIMIT 0,1", $address);
+					$address_exists	= $address_exists_q->fetch();
+					
+					if($address_exists["id"] > 0){
+						//Address is in the database, Update the generated message for the "supposed" owner to sign and send back to us verifications
+						$message_id_q = wot_doQuery("UPDATE `address_authentication_awaiting_index` SET `message` = ? WHERE `id` = ? AND `address_to_register` = ? LIMIT 1", $generated_message, $address_exists["id"], $address);
+					
+					}else{
+						//Address is not in the database, Generate a message for the "supposed" owner to sign and send back to us verifications
+						$message_id = wot_doQuery_returnId("INSERT INTO `address_authentication_awaiting_index` (
+																				`timestamp_attempt_to_register`,
+																				`address_to_register`,
+																				`message`
+																			)
+																			
+																		VALUES(
+																				?,
+																				?,
+																				?
+																			)", 
+																			time(),
+																			$address,
+																			$generated_message);
+					}
+					
+					//Assuming the queries above worked
+					$output["return_status"] = 1;
+					$output["authentication_message"] = $generated_message;
+			}else if($address_registered["id"] > 0){
+				$output["return_status"] = 102;
+				$output["return_status_message"] = "That address is already registered with us";
+			}
 				
 		}else{
 			$output["return_status"] = 101;
@@ -232,8 +241,23 @@ function register_address_step2($address, $signature){
 		
 		
 		if($message_valid == true){
-			$output["return_status"] = 1;
-			$output["return_status_message"] = '';
+			//Add address to database
+			$address_exists_q	= wot_doQuery("SELECT `id` FROM `address_index` WHERE `address` = ? LIMIT 0,1", $address);
+			$address_exists		= $address_exists_q->fetch();
+			
+			if($address_exists["id"] == 0){
+				$session_salt = wot_generateRandomString(1000);
+				wot_doQuery_returnId("INSERT INTO `address_index` (`address`, `timestamp_added`, `session_salt`) VALUE(?, ?, ?)", $address, time(), $session_salt);
+				
+				wot_createsession();
+			
+				$output["return_status"] = 1;
+				$output["return_status_message"] = '';
+			}else if($address_exists["id"] > 0){
+				$output["return_status"] = 102;
+				$output["return_status_message"] = "That address is already registered with this service.";
+			}
+			
 		}else if($message_valid == false){
 			$output["return_status"] = 101;
 			$output["return_status_message"] = 'That Signature did not match the message and Bitcoin address that was inputted';

@@ -6,3 +6,15 @@
 		<link rel="stylesheet" type="text/css" href="/resources/css/general-style.css">
 	</head>
 	<body>
+		<div id="reality">
+			<div id="finiteSpace">
+				<div id="sky">
+					<h1 style="text-align:center;">Web of Trust | Bitcoin Authentication and Universal Feedback</h1>
+					<?php
+						if($wot_session["return_status"] == 1){
+							echo "Welcome back!";
+							echo '<a href="/accountpanel">Account Panel</a>';
+						}
+					?>
+				</div>
+			
