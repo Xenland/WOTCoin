@@ -22,6 +22,8 @@ wot_header();
 						
 					?>
 						Welcome! <?php echo $_POST["btcaddress"];?>
+						<br/>
+						<a href="/">Home page</a>
 					<?php
 						}else if($login_step2["return_status"] != 1){
 					?>

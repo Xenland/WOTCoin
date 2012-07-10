@@ -34,6 +34,87 @@
 					}
 
 
+					//Figures out who we are awaiting on
+					function wot_awaitingOnMeOrSwim($me_status, $swim_status){
+						/*
+							Status Listing
+								Me Status
+								1 = "me" has signed the message; 
+								2 = "me" has declared they have completed their end of the bargin
+								3 = "me" has declared "swim" has completed their end of the bargin
+								
+								Swim Status
+								0 = Awaiting on Swim to approve of the transaction message and sign it
+								1 = Swim signed the transaction;
+								2 = "Swim" has declared they have completed their end of the barin
+								3 = "Swim" has declared "me" has completed their endd of the bargin
+								
+						*/
+						$output = -1; //-1 = Somethings not correct; 0 = nuetrual; 1 = me;  2 = swim;
+						
+						//Figure out "me" status then evaluate "swim" status to determine who we are awaiting on.
+						
+						
+						if($me_status == 0){
+							if($swim_status == 1){
+								//Me is 0 and Swim is 1 = awating on me
+								$output = 1;
+							}
+						}
+						
+						
+						
+						if($me_status == 1){
+							//What is swim status?
+							if($swim_status == 0){
+								$output = 2;
+							}else if($swim_status == 1){
+								$output = 0;
+							}
+						}
+						
+						
+						return $output;
+					}
+					
+					
+					//Output, figure out which one is me or swim and output both data
+					function wot_distinct_me_and_swim($address_a, $address_a_status, $address_b, $address_b_status){
+						global $wot_session;
+						/*
+							Return Status List (Reference | Update as needed)
+							0 = Nothing Executed;
+							1= Success
+						*/
+
+						//Declare default variables (Sanatize after Declaration)
+						$output 					= Array();
+						$output["return_status"]		= 0;
+						$output["me_address"]		= '';
+						$output["me_status"]		= 0;
+						$output["swim_address"]		= '';
+						$output["swim_status"]		= 0;
+						
+						$address_a	= trim($address_a);
+						$address_a_status	= (int) $address_a_status;
+						$address_b		= trim($address_b);
+						$address_b_status	= (int) $address_b_status;
+						
+						if($address_a == $wot_session["address"] && $address_b != $wot_session["address"]){
+							$output["me_status"] = $address_a_status;
+							
+							$output["swim_address"] = $address_b;
+							$output["swim_status"] = $address_b_status;
+						}else if($address_b == $wot_session["address"] && $address_a != $wot_session["address"]){
+							$output["me_status"] = $address_b_status;
+							
+							$output["swim_address"] = $address_a;
+							$output["swim_status"] = $address_a_status;
+						}
+						
+						return $output;
+					}
+
 
 
 
@@ -134,9 +215,9 @@
 										//Address IS in the database, Generate a message for the "supposed" owner to sign and send back to us verifications
 										$message_id_q = wot_doQuery("UPDATE `address_authentication_awaiting_index` SET `message` = ? WHERE `id` = ? AND `address_to_register` = ? LIMIT 1", $generated_message, $address_awaiting["id"], $address);
 									
-									}else if(count($address_awaiting) == 0){
+									}else if($address_awaiting["id"] == 0){
 										//Address is not in the database, Generate a message for the "supposed" owner to sign and send back to us verifications
-										$message_id = wot_doQuery_returnId("INSERT INTO `address_authentication_awaiting_index` (
+										$message_id_q = wot_doQuery_returnId("INSERT INTO `address_authentication_awaiting_index` (
 																								`timestamp_attempt_to_register`,
 																								`address_to_register`,
 																								`message`
@@ -312,6 +393,8 @@
 					$output				= Array();
 					$output["return_status"]	= 0;
 					$output["return_status_message"] = '';
+					$output["address_id"] = 0;
+					$output["address"] = '';
 					
 					if($_COOKIE[$cookie_session["name"]] != NULL){
 						//Split cookie
@@ -323,7 +406,7 @@
 						$hash			= $splitCookie[2];
 						
 						//Query for address session salt
-						$address_info_q = wot_doQuery("SELECT `session_salt` FROM `address_index` WHERE `id` = ? LIMIT 0,1", $address_id);
+						$address_info_q = wot_doQuery("SELECT `address`, `session_salt` FROM `address_index` WHERE `id` = ? LIMIT 0,1", $address_id);
 						$address_info	= $address_info_q->fetch();
 						
 						if($address_info["session_salt"] != ''){
@@ -335,6 +418,9 @@
 							
 							if($severside_session_hash == $hash){
 								$output["return_status"] = 1;
+								
+								$output["address"] = $address_info["address"];
+								$output["address_id"] = $address_id;
 							}else{
 								$output["return_status"] = 102;
 								$output["return_status_message"] = "Hash didn't match";
@@ -347,6 +433,129 @@
 					}else{
 						$output["return_status"] = 100;
 						$output["return_status_message"] = "No cookie";
+					}
+					
+					return $output;
+				}
+				
+				
+				function wot_detect_session_ended(){
+					global $wot_session;
+					
+					if($wot_session["return_status"] != 1){
+						header("Location:/sessionended");
+						exit;
+					}
+					
+					return true;
+				}
+				
+				
+				
+				
+				/*
+					[ Transaction Functions ]
+					************************
+				*/
+				function wot_initiate_tx($address_to_initiate_with, $message_to_sign, $signature){
+					global $wot_session;
+					
+					/*
+						Return Status List (Reference | Update as needed)
+						0 = Nothing Executed;
+						1= Success
+					*/
+					
+					//Declare default variables (Sanatize after Declaration)
+					$output				= Array();
+					$output["return_status"]	= 0;
+					$output["return_status_message"] = '';
+					
+					//validate the user has a valid session
+					if($wot_session["return_status"] == 1){
+						//Validate this address is... just that
+						$Bitcoin = OpenBitcoinClient_noconnection();
+						$address_valid = $Bitcoin["connection_tunnel"]->checkAddress($address_to_initiate_with);
+						
+						if($address_valid == 1){
+							//The address is valid, initiate transaction
+								//Check if the address we are initiating with has a id with us to import into the database with for more data
+								$address_b_id = 0;
+								$address_b_id_q = wot_doQuery("SELECT `id` FROM `address_index` WHERE `address` = ? LIMIT 0,1", $address_to_initiate_with);
+								$address_b_id_a = $address_b_id_q->fetch();
+								
+								if($address_b_id_a["id"] > 0){
+									$address_b_id = $address_b_id_a["id"];
+								}
+								
+								$initiation_id = wot_doQuery_returnId("INSERT INTO `feedback_queue_index` (`timestamp_initiated`, `address_a_id`, `address_a`, `address_a_signature`, `address_a_status`, `address_b`, `address_b_id`, `message_to_sign`)
+																			VALUES(
+																				?,
+																				?,
+																				?,
+																				?,
+																				?,
+																				?,
+																				?,
+																				?)",
+																				time(),
+																				$wot_session["address_id"],
+																				$wot_session["address"],
+																				$signature,
+																				'1',
+																				$address_to_initiate_with,
+																				$address_b_id,
+																				$message_to_sign);
+								if($initiation_id > 0){
+									$output["return_status"] = 1;
+									
+								}else{
+									$output["return_status"] = 102;
+									$output["return_status_message"] = "We were unable to add the transaction details to the database. Please report this issue if it is not fixed in the next 24 hours.";
+								}
+						}else{
+							$output["return_status"] = 100;
+							$output["return_status_message"] = 'That address dosen\' appear to be valid';
+						}
+						
+					}
+					
+					return $output;
+				}
+				
+				
+				
+				
+				
+				/* 
+					[ Transaction Functions ]
+				*/
+				
+				function wot_tx_queue_information($tx_id){
+					global $wot_session;
+					
+					/*
+						Return Status List (Reference | Update as needed)
+						0 = Nothing Executed;
+						1= Success
+					*/
+					
+					//Declare default variables (Sanatize after Declaration)
+					$output				= Array();
+					$output["return_status"]	= 0;
+					$output["return_status_message"] = '';
+					$output["db_data"] = Array();
+					
+					//Query for transaction
+					$transaction_info_q = wot_doQuery("SELECT `id`, `timestamp_initiated`, `address_a_id`, `address_a`, `address_a_signature`, `address_a_status`, `address_b_id`, `address_b`, `address_b_status`, `address_b_signature`, `message_to_sign` FROM `feedback_queue_index` WHERE `id` = ? AND (`address_a` = ? OR `address_b` = ?) LIMIT 0,1", $tx_id, $wot_session["address"], $wot_session["address"]);
+					$transaction_info	= $transaction_info_q->fetch();
+					
+					if($transaction_info["id"] == $tx_id){
+						$output["db_data"] = $transaction_info;
+						$output["return_status"] = 1;
+					}else{
+						$output["return_status"] = 100;
+						$output["return_status_message"] = "Unable to find that transaction within your permission levels.";
 					}
 					
 					return $output;

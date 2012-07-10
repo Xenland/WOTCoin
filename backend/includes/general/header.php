@@ -9,10 +9,10 @@
 		<div id="reality">
 			<div id="finiteSpace">
 				<div id="sky">
-					<h1 style="text-align:center;">Web of Trust | Bitcoin Authentication and Universal Feedback</h1>
+					<h1 style="text-align:center;"><a href="/">Web of Trust | Bitcoin Authentication and Universal Feedback</a></h1>
 					<?php
 						if($wot_session["return_status"] == 1){
-							echo "Welcome back!";
+							echo "Welcome ".$wot_session["address"]."<br/>";
 							echo '<a href="/accountpanel">Account Panel</a>';
 						}
 					?>

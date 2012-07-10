@@ -27,7 +27,7 @@ function wot_connectToDB(){
 //Execute a query
 function wot_doQuery(){
 	//Define local variables
-	$argument			= func_get_args();
+	$argument		= func_get_args();
 	$prepared_query	= $argument[0]; //Define prepared query (for simplicity)
 	
 	$sql_statement		= '';
