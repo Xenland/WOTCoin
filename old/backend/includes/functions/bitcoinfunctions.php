@@ -109,7 +109,7 @@ function verifyMessage($address, $signature, $message){
 			$output["return_status"] = 1;
 		}else if($message_matches_signature_query == false){
 			//That message/address/signature pair is NOT valid
-			$output["return_status"] = 102;
+			$output["return_status"] = 100;
 		}else{
 			//Not sure what happened, But it wasen't good, Failure
 			$output["return_status"] = 101;

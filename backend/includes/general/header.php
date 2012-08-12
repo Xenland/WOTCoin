@@ -1,20 +1,49 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE HTML>
+<html>
 	<head>
-		<title><?php wot_header_title(); ?></title>
-		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-		<link rel="stylesheet" type="text/css" href="/resources/css/general-style.css">
+		<title>Web of Trust &amp; Universal Feedback</title>
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>   
+
+		<!--Reset CSS Code-->
+		<link rel="StyleSheet" href="/resources/css/reset-style.css" type="text/css" media="screen">
+		<!-- Styling Code -->
+		<link rel="StyleSheet" href="/resources/css/main-style.css" type="text/css" media="screen">
+		
+		<script type="text/javascript">
+			$(document).ready(function(){
+				var documentHeight = $(document).height();
+				var documentWidth = $(document).innerWidth();
+					documentWidth -= 20;
+				$("#leftsidemenu").css("height", documentHeight+"px");
+				$("#contentBG").css("height", documentHeight+"px");
+				$("#contentBG").css("width", documentWidth+"px");
+			});
+		</script>
 	</head>
 	<body>
-		<div id="reality">
-			<div id="finiteSpace">
-				<div id="sky">
-					<h1 style="text-align:center;"><a href="/">Web of Trust | Bitcoin Authentication and Universal Feedback</a></h1>
-					<?php
-						if($wot_session["return_status"] == 1){
-							echo "Welcome ".$wot_session["address"]."<br/>";
-							echo '<a href="/accountpanel">Account Panel</a>';
-						}
-					?>
+		<div id="contentBG">
+			<div id="content">
+				<div id="header">
+					<div id="logo"></div>
+					<div id="addressContainer">
+						<div id="addressInputContainer">
+							<div id="addressInputContent">
+								<?php
+								if($wot_session["return_status"] != 1){
+								?>
+								Log in or Register Address: <input type="text" name="address" value="" size="30" maxlength="34" id="loginAddressInput"/>
+								<?php
+								}else{
+								?>
+								Search Address <input type="text" name="address" value="" size="30" maxlength="34" id="loginAddressInput"/>
+								<?php
+								}
+								?>
+							</div>
+						</div>
+						<div id="headerTitleContainer">
+							WEB OF TRUST &amp; UNIVERSAL FEEDBACK
+						</div>
+					</div>
 				</div>
-			
+				<div id="body">

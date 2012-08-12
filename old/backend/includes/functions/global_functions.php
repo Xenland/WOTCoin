@@ -226,14 +226,9 @@
 							$address_valid = $Bitcoin_connection["connection_tunnel"]->checkAddress($address);
 							
 							if($address_valid == 1){
-								$tmp_rand_string = wot_generateRandomString(512);
 								//Generate message
-								$generated_message =<<<EOT
----[BEGIN MESSAGE BLOCK]---
-$address-$tmp_rand_string
----[END MESSAGE BLOCK]---
-EOT;
-
+								$generated_message = $address."-".wot_generateRandomString(512);
+					
 								//Update the generated message for the "supposed" owner to sign and send back to us verifications
 									//Insert or update?
 									$address_awaiting_q = wot_doQuery("SELECT `id` FROM `address_authentication_awaiting_index` WHERE `address_to_register` = ? LIMIT 0,1", $address);
@@ -307,10 +302,17 @@ EOT;
 							//Query for Message
 							$message_q = wot_doQuery("SELECT `message` FROM `address_authentication_awaiting_index` WHERE `address_to_register` = ? LIMIT 0,1", $address);
 							$message = $message_q->fetch();
+							
+						try{
+							$message_valid = $Bitcoin_connection["connection_tunnel"]->query("verifymessage", $address, $signature, $message["message"]);
 
-							$message_valid = verifyMessage($address, $signature, trim($message["message"]));
-
-						if($message_valid["return_status"] == 1){ //Login Success  (@:-D)
+						}catch(Exception $e){
+							$message_valid = 102; //Invoke a 102
+							print_r($e);
+						}
+						
+						
+						if($message_valid == true){
 							//Add address to database
 							$address_exists_q	= wot_doQuery("SELECT `id` FROM `address_index` WHERE `address` = ? LIMIT 0,1", $address);
 							$address_exists	= $address_exists_q->fetch();
@@ -323,6 +325,8 @@ EOT;
 								$output["return_status"] = 1;
 								$output["return_status_message"] = '';
 							}else if($address_exists["id"] > 0){
+								
+								
 								wot_createSession($address);
 								
 								$output["return_status"] = 1;
@@ -332,11 +336,8 @@ EOT;
 							//Randomize the message so noone else can use the previouslyed used signemessage to sign in them selves (By means of javascript injection, maybe clipboard scanner,etc)
 							wot_doQuery("UPDATE `address_authentication_awaiting_index` SET `message` = ? WHERE `address_to_register` = ? LIMIT 1", wot_generateRandomString(1000), $address);
 							
-							//Check if their are any awaiting transactions ready to be reviewed by this account?
-							//$awaiting_tx_q = wot_doQuery("SELECT `
 							
-							
-						}else if($message_valid["return_status"] != 1){
+						}else if($message_valid == false){
 							$output["return_status"] = 101;
 							$output["return_status_message"] = 'That Signature did not match the message and Bitcoin address that was inputted';
 							
@@ -435,8 +436,6 @@ EOT;
 						
 							$severside_session_key = hash("sha512", $address_id.$address_info["session_salt"].$session_expiration.session_salt);
 							$severside_session_hash = hash("sha512", $address_id.$address_info["session_salt"].$session_expiration.session_salt.$severside_session_key);
-							
-							
 							/*$severside_session_key =  $address_id.$address_info["session_salt"].$session_expiration.session_salt;
 							$severside_session_hash = $address_id.$address_info["session_salt"].$session_expiration.session_salt.$severside_session_key;*/
 							
@@ -488,8 +487,6 @@ EOT;
 						Return Status List (Reference | Update as needed)
 						0 = Nothing Executed;
 						1= Success
-						100=address not valid
-						102=signature isn't valid
 					*/
 					
 					//Declare default variables (Sanatize after Declaration)
@@ -502,10 +499,9 @@ EOT;
 						//Validate this address is... just that
 						$Bitcoin = OpenBitcoinClient_noconnection();
 						$address_valid = $Bitcoin["connection_tunnel"]->checkAddress($address_to_initiate_with);
-						if($address_valid == 1){ //The address is valid
-							$signature_valid = verifyMessage($wot_session["address"], $signature, $message_to_sign);
-var_dump($signature_valid);
-							if($signature_valid["return_status"] == 1){
+						
+						if($address_valid == 1){
+							//The address is valid, initiate transaction
 								//Check if the address we are initiating with has a id with us to import into the database with for more data
 								$address_b_id = 0;
 								$address_b_id_q = wot_doQuery("SELECT `id` FROM `address_index` WHERE `address` = ? LIMIT 0,1", $address_to_initiate_with);
@@ -540,10 +536,6 @@ var_dump($signature_valid);
 									$output["return_status"] = 102;
 									$output["return_status_message"] = "We were unable to add the transaction details to the database. Please report this issue if it is not fixed in the next 24 hours.";
 								}
-							}else if($signature_valid["return_status"] != 1){
-								$output["return_status"] = 101;
-								$output["return_status_message"] = "That signature dosen't appear to be valid";
-							}
 						}else{
 							$output["return_status"] = 100;
 							$output["return_status_message"] = 'That address dosen\' appear to be valid';

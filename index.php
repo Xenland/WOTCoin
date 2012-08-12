@@ -1,5 +1,6 @@
 <?php
 /*
+
 	Dev Author: Shane B. (Xenland)
 	Contributors: ...
 */
@@ -12,29 +13,35 @@ $wot_session = wot_verifySession();
 $wot_header_config["title"] = "Home Safe Home.";
 wot_header();
 ?>
-			<div id="world">
-				<div class="contentBox">
-					<h2>Login to your your WOTCoin Account</h2>
-					<form action="/login.php" method="post">
-						<input type="text" name="btcaddress" value="Type in your registered Bitcoin Address" size="35" style="margin:1em;"  onFocus="if(this.value=='Type in your registered Bitcoin Address'){ this.value=''}" onBlur="if(this.value==''){ this.value='Type in your registered Bitcoin Address';}"/>
-						<input type="submit" value="Next Step &gt;&gt;"/>
-					</form>
-				
-				</div>
-
-				<div class="contentBox" style="margin-top:5em;">
-					<h2>Search a registered Bitcoin Address</h2>
-					<form action="/searchAddress.php" method="post">
-					<input type="text" name="btcaddress" value="Type in a Bitcoin address to search for here" size="35" style="margin:1em;" onFocus="if(this.value=='Type in a Bitcoin address to search for here'){ this.value=''}" onBlur="if(this.value==''){ this.value='Type in a Bitcoin address to search for here';}"/>
-					<input type="submit" value="Next Step &gt;&gt;"/>
-				</div>
-			</div>
-			
-			<div id="ground">
-			
-			</div>
-		</div>
-	</div>
+					<?php include("backend/includes/general/leftside_menu.php");?>
+					<div id="bodyContent">
+						<?php
+						include("backend/includes/general/transactionmenu.php");
+						?>
+						<p>
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Welcome to WOTCoin, the first easy to use universal Bitcoin feedback system!
+							Based on the tried and true web of trust format, this system provides a web
+							based platform to build and display your trade history proudly, as it should be,
+							because you earned it!
+						</p><br/><br/>
+						<p>
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;As a buyer you can also rest assured knowing that your trading partner not
+							only is who they say they are, but they also fulfil their registered agreements.
+							Best of all, because the agreement process requires both parties to sign and
+							then confirm the agreement, each transaction has the legal standing of a
+							contractual agreement.
+						</p><br/><br/>
+						<p>
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Trade easy with WOTCoin! Register by entering your Bitcoin address above
+							or search for current user profiles below.
+						</p>
+	
+						<br/><br/>
+						<div id="search">
+							<h3 class="search">SEARCH USERS</h3>
+							<input type="text" name="address" value="" id="searchInput" size="35" maxlength="34"/>
+						</div>
+					</div>
 <?php
 include($include_footer);
 ?>

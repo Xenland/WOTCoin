@@ -1,0 +1,71 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Web of Trust &amp; Universal Feedback</title>
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>   
+
+		<!--Reset CSS Code-->
+		<link rel="StyleSheet" href="/resources/css/reset-style.css" type="text/css" media="screen">
+		<!-- Styling Code -->
+		<link rel="StyleSheet" href="/resources/css/main-style.css" type="text/css" media="screen">
+		<script type="text/javascript">
+			$(document).ready(function(){
+				var documentHeight = $(document).height();
+				var documentWidth = $(document).innerWidth();
+					documentWidth -= 20;
+				$("#leftsidemenu").css("height", documentHeight+"px");
+				$("#contentBG").css("height", documentHeight+"px");
+				$("#contentBG").css("width", documentWidth+"px");
+			});
+		</script>
+	</head>
+	<body>
+		<div id="contentBG">
+			<div id="content">
+				<div id="header">
+					<div id="logo"></div>
+					<div id="addressContainer">
+						<div id="addressInputContainer">
+							<div id="addressInputContent">
+								Log in or Register Address: <input type="text" name="address" value="" size="45" maxlength="34" id="loginAddressInput"/>
+							</div>
+						</div>
+						<div id="headerTitleContainer">
+							WEB OF TRUST &amp; UNIVERSAL FEEDBACK
+						</div>
+					</div>
+				</div>
+				<div id="body">
+					<div id="leftsidemenu">
+						<div class="leftside-entry-selected">
+							<a href="/login" class="leftside-entry-link">Login</a>
+						</div>
+						<div class="leftside-entry">
+							<a href="#" class="leftside-entry-link">Search users</a>
+						</div>
+						<div class="leftside-entry">
+							<a href="#" class="leftside-entry-link">F.A.Q.</a>
+						</div>
+						<div class="leftside-entry">
+							<a href="#" class="leftside-entry-link">Contact</a>
+						</div>						
+					</div>
+					<div id="bodyContent">
+						To login/register copy the message in the text box below and paste it into the "Sign Message" box found in your Bitcoin Client.
+
+						<div class="contbox1Container">
+							<div class="contbox1Content">
+								<textarea col="1" rows="1" style="width:99.99%;height:10em;" class="loginmessage">---[BEGIN MESSAGE BLOCK]---
+I sign that I am indeed the owner of the address of ""
+---[END MESSAGE BLOCK]---</textarea>
+							</div>
+							<div class="loginbutton">
+								<input type="submit" value="Authenticate My Identity" class="login"/>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

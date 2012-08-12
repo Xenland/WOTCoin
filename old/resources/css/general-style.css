@@ -1,0 +1,72 @@
+/* Reset CSS and Universalize it */
+			*{
+				padding:0;
+				border:0;
+				margin:0;
+				font-size:100%;
+			}
+			
+			h1{
+				font-size:150%;
+				
+				margin:1em;
+			}
+			
+			h2{
+				font-size:120%;
+				
+				margin:1em;
+			}
+			
+			input{
+				border: 2px solid #000;
+				-moz-border-radius: 5px;
+				border-radius: 5px;
+				
+				padding:0.5em;
+			}
+			
+			textarea{
+				border: 2px solid #000;
+				-moz-border-radius: 5px;
+				border-radius: 5px;
+				
+				padding:0.5em;
+			}
+			
+		/* Begin Styling */
+		body{
+			background-image:url('/images/style/metalbg.jpeg');
+		}
+		
+		#reality{
+			width:99.99%;
+		}
+		
+		#finiteSpace{
+			
+			width:900px;
+			
+			margin:0 auto;
+		}
+		
+		#sky{
+			width:900px;
+			height:150px;
+			
+		}
+		
+		#world{
+			width:900px;
+			
+		}
+		
+		.contentBox{
+			-moz-border-radius: 9px;
+			border-radius: 9px;
+			
+			background: #FFF;
+			
+			padding:1.5em;
+			
+		}

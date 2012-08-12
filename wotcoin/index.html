@@ -1,0 +1,297 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Web of Trust &amp; Universal Feedback</title>
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>   
+		<!-- Reset Code -->
+		<style type="text/css">
+		body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,textarea,p,blockquote,th,td { 
+			margin:0;
+			padding:0;
+		}
+		table {
+			border-collapse:collapse;
+			border-spacing:0;
+		}
+		fieldset,img { 
+			border:0;
+		}
+		address,caption,cite,code,dfn,em,strong,th,var {
+			font-style:normal;
+			font-weight:normal;
+		}
+		ol,ul {
+			list-style:none;
+		}
+		caption,th {
+			text-align:left;
+		}
+		h1,h2,h3,h4,h5,h6 {
+			font-size:100%;
+			font-weight:normal;
+		}
+		q:before,q:after {
+			content:'';
+		}
+		abbr,acronym { border:0;
+		}
+
+		</style>
+
+
+
+
+		<!-- Styling Code -->
+		<style type="text/css">
+		body{
+			background-image:url('mainbg.png');
+			background-position: top left;
+			background-repeat: repeat-x;
+		}
+
+		#content{
+			width:1000px;
+			
+		}
+
+
+		#header{
+			width:1000px;
+
+		}
+
+		#logo{
+			float:left;
+
+			background-image:url('logo.png');
+			background-repeat: no-repeat;
+			background-attachment: scroll;
+			background-position: top left;
+
+			width:259px;
+			height:181px;
+		}
+
+		#addressContainer{
+			float:left;
+
+			width:741px;
+			height:191px;
+
+			background-color:transparent;
+			background-image:url('addressheader.png');
+			background-repeat: no-repeat;
+			background-attachment: scroll;
+			background-position:top left;
+		}
+
+		#addressInputContainer{
+			position:relative;
+			top:62px;
+
+			width:741px;
+			height:22px;
+
+
+		}
+
+		#addressInputContent{
+			color: #caf8ff;
+
+			font-family:tahoma;
+			text-transform:uppercase;
+
+			position:relative;
+			top:0;
+			left:44px;
+		}
+
+		#loginAddressInput{
+			/* <input> tag */
+			position:relative;
+			top:0px;
+			left:1px;
+
+			padding-left:5px;
+			padding-right: 5px;
+			font-size:105%;
+			color: #4e9ec6;
+			background-color:#caf8ff;
+
+
+			border:2px solid #4089ae;
+			-moz-border-radius: 15px;
+			border-radius: 15px;
+		}
+
+
+
+		#headerTitleContainer{
+			position:relative;
+			top: 106px;
+			left: 0;
+
+			color:#caf8ff;
+			font-size:130%;
+			font-weight:bold;
+			font-family: Gill Sans, Gill Sans MT, sans-serif;
+		}
+
+		#bodyContent{
+			padding-top:2.1em;
+			width:1000px;
+		}
+
+		#leftsidemenu{
+			float:left;
+
+			margin-top:-10px;
+
+			width:200px;
+			height:99.99%;
+
+			background-image:url('leftsidemenugbg.png');
+			background-repeat: repeat-y;
+			background-attachment:fixed;
+			background-position: top left;
+		}
+
+
+
+		.leftside-entry{
+			width:140px;
+			text-align:center;
+
+			padding:1em;
+		}
+
+		.leftside-entry-link:active,.leftside-entry-link:visited,.leftside-entry-link:link{
+			font-size:110%;
+			font-weight:bold;
+			color:#000;
+			text-transform:uppercase;
+			text-decoration:none;
+			
+
+			text-shadow:0px 0px 10px #000000
+		}
+
+
+		.leftside-entry-link:hover{
+			font-size:110%;
+			font-weight:bold;
+			color:#000;
+			text-transform:uppercase;
+			text-decoration:none;
+			
+
+			text-shadow:0px 0px 10px #2626FF
+		}
+
+
+		#bodyContent{
+			float:right;
+			
+			width:800px;
+
+			font-family: ‘Trebuchet MS’, Helvetica, sans-serif;
+		}
+
+
+		#searchInput{
+						/* <input> tag */
+			position:relative;
+			top:0px;
+			left:1px;
+
+			padding-left:5px;
+			padding-right: 5px;
+			font-size:105%;
+			color: #4e9ec6;
+			background-color:#caf8ff;
+
+
+			border:2px solid #4089ae;
+			-moz-border-radius: 15px;
+			border-radius: 15px;
+		}
+
+		h3.search{
+			font-weight:bold;
+			font-family:tahoma;
+			font-size:120%;
+		}
+		</style>
+
+		<script type="text/javascript">
+			$(document).ready(function(){
+				var documentHeight = $(document).height();
+				var documentWidth = $(document).innerWidth();
+					documentWidth -= 20;
+				$("#leftsidemenu").css("height", documentHeight+"px");
+				$("#contentBG").css("height", documentHeight+"px");
+				$("#contentBG").css("width", documentWidth+"px");
+			});
+		</script>
+	</head>
+	<body>
+		<div id="contentBG">
+			<div id="content">
+				<div id="header">
+					<div id="logo"></div>
+					<div id="addressContainer">
+						<div id="addressInputContainer">
+							<div id="addressInputContent">
+								Log in or Register Address: <input type="text" name="address" value="" size="45" maxlength="34" id="loginAddressInput"/>
+							</div>
+						</div>
+						<div id="headerTitleContainer">
+							WEB OF TRUST &amp; UNIVERSAL FEEDBACK
+						</div>
+					</div>
+				</div>
+				<div id="body">
+					<div id="leftsidemenu">
+						<div class="leftside-entry">
+							<a href="/login" class="leftside-entry-link">Login</a>
+						</div>
+						<div class="leftside-entry">
+							<a href="#" class="leftside-entry-link">Search users</a>
+						</div>
+						<div class="leftside-entry">
+							<a href="#" class="leftside-entry-link">F.A.Q.</a>
+						</div>
+						<div class="leftside-entry">
+							<a href="#" class="leftside-entry-link">Contact</a>
+						</div>						
+					</div>
+					<div id="bodyContent">
+						<p>
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Welcome to WOTCoin, the first easy to use universal Bitcoin feedback system!
+							Based on the tried and true web of trust format, this system provides a web
+							based platform to build and display your trade history proudly, as it should be,
+							because you earned it!
+						</p><br/><br/>
+						<p>
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;As a buyer you can also rest assured knowing that your trading partner not
+							only is who they say they are, but they also fulfil their registered agreements.
+							Best of all, because the agreement process requires both parties to sign and
+							then confirm the agreement, each transaction has the legal standing of a
+							contractual agreement.
+						</p><br/><br/>
+						<p>
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Trade easy with WOTCoin! Register by entering your Bitcoin address above
+							or search for current user profiles below.
+						</p>
+	
+						<br/><br/>
+						<div id="search">
+							<h3 class="search">SEARCH USERS</h3>
+							<input type="text" name="address" value="" id="searchInput" size="34" maxlength="34"/>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
